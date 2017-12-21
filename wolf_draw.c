@@ -6,7 +6,7 @@
 /*   By: skamoza <skamoza@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/17 13:47:05 by skamoza           #+#    #+#             */
-/*   Updated: 2017/12/20 12:48:23 by skamoza          ###   ########.fr       */
+/*   Updated: 2017/12/21 21:12:41 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,13 @@ void	wolf_draw_floor_ceil(t_map *map, t_line line, int ceil, int y)
 		current_floor.x = weight * floor.x + (1.0 - weight) * map->player.pos.x;
 		current_floor.y = weight * floor.y + (1.0 - weight) * map->player.pos.y;
 		map->image.data[y * map->image.size_line / 4 + line.x] = 
-		map->textures[1].data[(int)(floor.y * map->textures[1].h) % map->textures[1].h * map->textures[1].size_line / 4 + (int)(floor.x * map->textures[1].h) % map->textures[1].h];
+		map->textures[1].data[(int)(floor.y * map->textures[1].h) %
+		map->textures[1].h * map->textures[1].size_line / 4 +
+		(int)(floor.x * map->textures[1].h) % map->textures[1].h];
+		map->image.data[(HEIGHT - y) * map->image.size_line / 4 + line.x] = 
+		map->textures[5].data[(int)(floor.y * map->textures[5].h) %
+		map->textures[5].h * map->textures[5].size_line / 4 +
+		(int)(floor.x * map->textures[5].h) % map->textures[5].h];
 		y++;
 	}
 }
@@ -39,15 +45,19 @@ void	wolf_draw_floor_ceil(t_map *map, t_line line, int ceil, int y)
 static inline void	wolf_draw_wall(t_map *map, t_line line, int y, int draw_end)
 {
 	int		d;
+	int		old;
 	int		tex_y;
 
 	while (y < draw_end)
 	{
 		d = y * 256 - HEIGHT * 128 + line.h * 128;
 		tex_y = abs(((d * map->textures[line.tex].h) / line.h) / 256);
+		old = map->image.data[y * map->image.size_line / 4 + line.x];
 		map->image.data[y * map->image.size_line / 4 + line.x] =
 		map->textures[line.tex].data[(int)(map->textures[line.tex].w *
 													tex_y + line.tex_x)];
+		if (map->image.data[y * map->image.size_line / 4 + line.x] & 0xFF000000)
+			map->image.data[y * map->image.size_line / 4 + line.x] = old;
 		y++;
 	}
 }
@@ -57,9 +67,9 @@ static inline void	wolf_draw_line(t_map *map, t_dda *dda, t_line line)
 	int		draw_start;
 	int		draw_end;
 
-	line.h = ((double)HEIGHT / line.dist);
 	line.dist = line.side ? (line.map_y - map->player.pos.y + (1.0 - dda->step.y) / 2.0) /
 	dda->dir.y : (line.map_x - map->player.pos.x + (1.0 - dda->step.x) / 2.0) / dda->dir.x;
+	line.h = ((double)HEIGHT / line.dist);
 	draw_start = (-line.h + HEIGHT) / 2;
 	draw_start = draw_start < 0 ? 0 : draw_start;
 	draw_end = (line.h + HEIGHT) / 2;
@@ -95,7 +105,7 @@ static inline void	wolf_dda(t_map *map, t_dda *dda, int m_x, int m_y)
 			m_y += dda->step.y;
 		}
 		if (m_x < 0 || m_y < 0 || m_x >= map->map.w || m_y >= map->map.h
-			|| (line.tex = map->map.data[m_y * map->map.size_line / 4 + m_x]))
+			|| (line.tex = map->map.data[m_y * map->map.size_line / 4 + m_x] & 0xFFFFFF))
 			break ;
 	}
 	if (line.tex >= TEXTURES)

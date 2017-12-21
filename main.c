@@ -6,7 +6,7 @@
 /*   By: skamoza <skamoza@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/17 13:30:33 by skamoza           #+#    #+#             */
-/*   Updated: 2017/12/20 10:56:31 by skamoza          ###   ########.fr       */
+/*   Updated: 2017/12/21 20:24:50 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,16 +63,16 @@ int		wolf_test_released(int keycode, t_map *map)
 
 void	wolf_hooks(t_map *map)
 {
-	mlx_hook(map->window, 9, FocusChangeMask, wolf_focus, map);
-	mlx_hook(map->window, 10, FocusChangeMask, wolf_unfocus, map);
-	mlx_hook(map->window, KeyPress, KeyPressMask, wolf_key, map);
+	mlx_hook(map->window, 9, 1L, wolf_focus, map);
+	mlx_hook(map->window, 10, 1L, wolf_unfocus, map);
+	mlx_hook(map->window, 2, 1L, wolf_key, map);
 	mlx_hook(map->window, 17, 1L << 17, wolf_exit_x, map);
 	mlx_hook(map->window, 11, 1L, wolf_test, map);
 	mlx_mouse_hook(map->window, (int (*)())wolf_mouse, map);
 	mlx_expose_hook(map->window, (int (*)())wolf_draw, map);
+	/*
 	mlx_loop_hook(map->window, (int (*)())wolf_test, map);
-	mlx_do_key_autorepeaton(map->mlx);
-	mlx_do_sync(map->mlx);
+	*/
 }
 
 void	wolf_open(void *mlx, t_image *image, char *map_name)

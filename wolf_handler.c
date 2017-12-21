@@ -6,7 +6,7 @@
 /*   By: skamoza <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/06 16:58:02 by skamoza           #+#    #+#             */
-/*   Updated: 2017/12/20 10:49:14 by skamoza          ###   ########.fr       */
+/*   Updated: 2017/12/21 18:45:35 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,10 @@ int		wolf_key(int keycode, t_map *map)
 {
 	if (keycode == 53)
 		wolf_exit_x(map);
-	else if (keycode == 119 || keycode  == 115)
-		wolf_step(map, &map->player, keycode == 119 ? 0.2 : -0.2);
-	else if (keycode == 97 || keycode == 100)
-		wolf_rotate(&map->player, keycode == 97 ? 1.0 : -1.0, 0.2);
+	else if (keycode == 126 || keycode  == 125)
+		wolf_step(map, &map->player, keycode == 126 ? 0.2 : -0.2);
+	else if (keycode == 123 || keycode == 124)
+		wolf_rotate(&map->player, keycode == 123 ? 1.0 : -1.0, 0.2);
 	else
 		printf("Keycode: %d\n", keycode);
 	wolf_draw(map);

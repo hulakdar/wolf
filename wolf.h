@@ -6,7 +6,7 @@
 /*   By: skamoza <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/06 16:15:28 by skamoza           #+#    #+#             */
-/*   Updated: 2017/12/20 12:48:23 by skamoza          ###   ########.fr       */
+/*   Updated: 2017/12/21 20:52:18 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 # define HEIGHT 700
 # define WIDTH 700
 # include <mlx.h>
-# include "X.h"
 # include <pthread.h>
 # include <math.h>
 # include "libft/includes/libft.h"
@@ -83,7 +82,7 @@ typedef struct	s_map
 	t_player	player;
 	void		*mlx;
 	void		*window;
-	char		buttons[70000];
+	char		buttons[300];
 }				t_map;
 void			wolf_error(char *error, t_map *parameter);
 void			wolf_usage(void);

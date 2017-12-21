@@ -7,7 +7,7 @@ NAME=wolf3d
 all: $(NAME)
 
 $(NAME): $(OBJ) libft/libft.a
-	@$(CC) -o $(NAME) $(OBJ) $(CFLAGS) -pthread -lm -lmlx -lXext -lX11 libft/libft.a
+	@$(CC) -o $(NAME) $(OBJ) $(CFLAGS) -lm -lmlx -framework OpenGL -framework AppKit libft/libft.a
 	@echo "Binary is done!"
 libft/libft.a:
 	@make -C libft/
