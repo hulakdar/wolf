@@ -6,7 +6,7 @@
 /*   By: skamoza <skamoza@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/17 13:30:33 by skamoza           #+#    #+#             */
-/*   Updated: 2017/12/21 20:24:50 by skamoza          ###   ########.fr       */
+/*   Updated: 2017/12/26 18:26:20 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,17 +47,10 @@ int		wolf_test(t_map *map)
 	return (0);
 }
 
-int		wolf_test_pressed(int keycode, t_map *map)
+int		wolf_unpress(int keycode, t_map *map)
 {
-	map->buttons[keycode] = 1;
-	wolf_key(keycode, map);
-	return (0);
-}
-
-int		wolf_test_released(int keycode, t_map *map)
-{
-	map->buttons[keycode] = 0;
-	wolf_key(keycode, map);
+	if (keycode == 257)
+		map->strafe = 0;
 	return (0);
 }
 
@@ -66,6 +59,7 @@ void	wolf_hooks(t_map *map)
 	mlx_hook(map->window, 9, 1L, wolf_focus, map);
 	mlx_hook(map->window, 10, 1L, wolf_unfocus, map);
 	mlx_hook(map->window, 2, 1L, wolf_key, map);
+	mlx_hook(map->window, 3, 1L<<1, wolf_unpress, map);
 	mlx_hook(map->window, 17, 1L << 17, wolf_exit_x, map);
 	mlx_hook(map->window, 11, 1L, wolf_test, map);
 	mlx_mouse_hook(map->window, (int (*)())wolf_mouse, map);
@@ -110,6 +104,7 @@ void	wolf_init(t_map *map, char *map_name)
 	map->player.dir.y = 0.0;
 	map->player.plane.x = 0.0;
 	map->player.plane.y = 0.66;
+	map->strafe = 0;
 	wolf_hooks(map);
 }
 

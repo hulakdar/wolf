@@ -7,13 +7,13 @@ NAME=libft.a
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	ar rc $(NAME) $(OBJ)
+	@ar rc $(NAME) $(OBJ)
 %.o: %.c
-	$(CC) -c $^ -o $@ $(CFLAGS) -I includes/
+	@$(CC) -c $^ -o $@ $(CFLAGS) -I includes/
 clean:
-	rm -f $(OBJ)
+	@rm -f $(OBJ)
 fclean: clean
-	rm -f $(NAME)
+	@rm -f $(NAME)
 re: fclean all
 
 .PHONY: clean fclean re

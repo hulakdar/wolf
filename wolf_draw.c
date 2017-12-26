@@ -6,38 +6,37 @@
 /*   By: skamoza <skamoza@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/17 13:47:05 by skamoza           #+#    #+#             */
-/*   Updated: 2017/12/21 21:12:41 by skamoza          ###   ########.fr       */
+/*   Updated: 2017/12/26 18:06:02 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wolf.h"
 
-void	wolf_draw_floor_ceil(t_map *map, t_line line, int ceil, int y)
+void	wolf_draw_floor_ceil(t_map *map, t_line line, int y)
 {
 	t_point	floor;
-	t_point	current_floor;
-	double	dist;
-	double	weight;
+	t_point	current;
+	t_point	dist;
+	int		tex_x;
+	int		tex_y;
 
 	y = y < 0 ? HEIGHT : y;
 	floor.x = line.side ? line.map_x + line.wall_x : line.map_x;
 	floor.y = line.side ? line.map_y : line.map_y + line.wall_x;
-	floor.x = map->player.dir.x < 0 ? floor.x + 1.0 : floor.x;
-	floor.y = map->player.dir.y < 0 ? floor.y + 1.0 : floor.x;
+	floor.x = map->player.dir.x < 0.0 ? floor.x + 1.0 : floor.x;
+	floor.y = map->player.dir.y < 0.0 ? floor.y + 1.0 : floor.y;
 	while (y < HEIGHT)
 	{
-		dist = (double)HEIGHT / (2.0 * (double)y - (double)HEIGHT);
-		weight = dist / line.dist;
-		current_floor.x = weight * floor.x + (1.0 - weight) * map->player.pos.x;
-		current_floor.y = weight * floor.y + (1.0 - weight) * map->player.pos.y;
+		dist.x = (double)HEIGHT / (double)((y << 1) - HEIGHT);
+		dist.y = dist.x / line.dist;
+		current.x = dist.y * floor.x + (1.0 - dist.y) * map->player.pos.x;
+		current.y = dist.y * floor.y + (1.0 - dist.y) * map->player.pos.y;
+		tex_x = (int)(current.x * map->textures[8].w) % map->textures[8].w;
+		tex_y = (int)(current.y * map->textures[8].h) % map->textures[8].h;
 		map->image.data[y * map->image.size_line / 4 + line.x] = 
-		map->textures[1].data[(int)(floor.y * map->textures[1].h) %
-		map->textures[1].h * map->textures[1].size_line / 4 +
-		(int)(floor.x * map->textures[1].h) % map->textures[1].h];
+		map->textures[8].data[tex_y * map->textures[8].size_line / 4 + tex_x];
 		map->image.data[(HEIGHT - y) * map->image.size_line / 4 + line.x] = 
-		map->textures[5].data[(int)(floor.y * map->textures[5].h) %
-		map->textures[5].h * map->textures[5].size_line / 4 +
-		(int)(floor.x * map->textures[5].h) % map->textures[5].h];
+		map->textures[8].data[tex_y * map->textures[8].size_line / 4 + tex_x];
 		y++;
 	}
 }
@@ -51,10 +50,10 @@ static inline void	wolf_draw_wall(t_map *map, t_line line, int y, int draw_end)
 	while (y < draw_end)
 	{
 		d = y * 256 - HEIGHT * 128 + line.h * 128;
-		tex_y = abs(((d * map->textures[line.tex].h) / line.h) / 256);
+		tex_y = abs(((d * map->textures[line.sector.tex].h) / line.h) / 256);
 		old = map->image.data[y * map->image.size_line / 4 + line.x];
 		map->image.data[y * map->image.size_line / 4 + line.x] =
-		map->textures[line.tex].data[(int)(map->textures[line.tex].w *
+		map->textures[line.sector.tex].data[(int)(map->textures[line.sector.tex].w *
 													tex_y + line.tex_x)];
 		if (map->image.data[y * map->image.size_line / 4 + line.x] & 0xFF000000)
 			map->image.data[y * map->image.size_line / 4 + line.x] = old;
@@ -67,8 +66,9 @@ static inline void	wolf_draw_line(t_map *map, t_dda *dda, t_line line)
 	int		draw_start;
 	int		draw_end;
 
-	line.dist = line.side ? (line.map_y - map->player.pos.y + (1.0 - dda->step.y) / 2.0) /
-	dda->dir.y : (line.map_x - map->player.pos.x + (1.0 - dda->step.x) / 2.0) / dda->dir.x;
+	line.dist = line.side ? (line.map_y - map->player.pos.y + (1.0 -
+	dda->step.y) / 2.0) / dda->dir.y : (line.map_x - map->player.pos.x
+	+ (1.0 - dda->step.x) / 2.0) / dda->dir.x;
 	line.h = ((double)HEIGHT / line.dist);
 	draw_start = (-line.h + HEIGHT) / 2;
 	draw_start = draw_start < 0 ? 0 : draw_start;
@@ -77,14 +77,14 @@ static inline void	wolf_draw_line(t_map *map, t_dda *dda, t_line line)
 	line.wall_x = line.side ? map->player.pos.x + line.dist * dda->dir.x :
 							map->player.pos.y + line.dist * dda->dir.y;
 	line.wall_x -= floor(line.wall_x);
-	line.tex_x = (int)(line.wall_x * (double)map->textures[line.tex].w);
+	line.tex_x = (int)(line.wall_x * (double)map->textures[line.sector.tex].w);
 	/*
 	line.tex_x = (line.side == 0 && dda->dir.x < 0) || (line.side == 1 &&
-	dda->dir.x > 0) ? map->textures[line.tex].w - line.tex_x - 1 : line.tex_x;
+	dda->dir.x > 0) ? map->textures[line.sector.tex].w - line.tex_x - 1 : line.tex_x;
 	*/
 	line.x = dda->x;
 	wolf_draw_wall(map, line, draw_start, draw_end);
-	wolf_draw_floor_ceil(map, line, draw_start - 1, draw_end + 1);
+	wolf_draw_floor_ceil(map, line, draw_end);
 }
 
 static inline void	wolf_dda(t_map *map, t_dda *dda, int m_x, int m_y)
@@ -93,7 +93,7 @@ static inline void	wolf_dda(t_map *map, t_dda *dda, int m_x, int m_y)
 
 	while (1)
 	{
-		line.tex = 0;
+		line.sector.tex = 0;
 		if (dda->side_dist.x < dda->side_dist.y && !(line.side = 0))
 		{
 			dda->side_dist.x += dda->d.x;
@@ -105,10 +105,10 @@ static inline void	wolf_dda(t_map *map, t_dda *dda, int m_x, int m_y)
 			m_y += dda->step.y;
 		}
 		if (m_x < 0 || m_y < 0 || m_x >= map->map.w || m_y >= map->map.h
-			|| (line.tex = map->map.data[m_y * map->map.size_line / 4 + m_x] & 0xFFFFFF))
+		|| (line.sector.tex = wolf_get_sector(map, m_y, m_x)))
 			break ;
 	}
-	if (line.tex >= TEXTURES)
+	if (line.sector.tex >= TEXTURES)
 		wolf_error("invalid map, no such texture", map);
 	line.map_x = m_x;
 	line.map_y = m_y;

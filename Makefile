@@ -8,10 +8,10 @@ all: $(NAME)
 
 $(NAME): $(OBJ) libft/libft.a
 	@$(CC) -o $(NAME) $(OBJ) $(CFLAGS) -lm -lmlx -framework OpenGL -framework AppKit libft/libft.a
-	@echo "Binary is done!"
+	@echo "Binary is done! 🖥"
 libft/libft.a:
 	@make -C libft/
-	@echo "Library is done!"
+	@echo "Library is done!📚"
 obj/%.o: %.c
 	@$(CC) -c $^ -o $@ $(CFLAGS)
 clean:
