@@ -6,7 +6,7 @@
 /*   By: skamoza <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/06 16:15:28 by skamoza           #+#    #+#             */
-/*   Updated: 2017/12/26 18:07:18 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/02 17:04:11 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,19 +35,23 @@ typedef struct	s_point
 	double		x;
 	double		y;
 }				t_point;
+typedef struct	s_coord
+{
+	int			x;
+	int			y;
+}				t_coord;
+typedef struct	s_sect{
+	unsigned buffer : 15;
+	unsigned is_wall : 1;
+	unsigned n : 4;
+	unsigned e : 4;
+	unsigned w : 4;
+	unsigned s : 4;
+}				t_sect;
 typedef union	u_sector
 {
-	int			tex;
-	struct		s_s{
-		int buffer : 7;
-		int is_wall : 1;
-		int n : 4;
-		int e : 4;
-		int w : 4;
-		int s : 4;
-		int	floor : 4;
-		int ceil : 4;
-	}			sect;
+	unsigned	tex;
+	t_sect		sect;
 }				t_sector;
 typedef struct	s_line
 {
@@ -55,11 +59,14 @@ typedef struct	s_line
 	int			map_x;
 	int			map_y;
 	int			x;
+	int			tex;
 	int			h;
-	int			side;
+	unsigned	side : 1;
+	unsigned	is_floor : 1;
 	double		dist;
 	double		wall_x;
 	double		tex_x;
+	t_point		ray_dir;
 }				t_line;
 typedef struct	s_dda
 {
@@ -91,7 +98,7 @@ typedef struct	s_map
 {
 	t_image		map;
 	t_image		image;
-	t_image		textures[TEXTURES];
+	t_image		tex[TEXTURES];
 	t_image		sprites[SPRITES];
 	t_player	player;
 	char		strafe : 1;
@@ -99,11 +106,15 @@ typedef struct	s_map
 	void		*window;
 }				t_map;
 void			wolf_error(char *error, t_map *parameter);
+void			wolf_draw_floor_ceil(t_map *map, t_line line, int y);
 void			wolf_usage(void);
 void			wolf_zoom(int keycode, int x, int y, t_map *map);
+void			wolf_strafe(t_map *map, t_player *player, double speed);
+int				wolf_is_wall(t_map *map, int m_y, int m_x);
 int				wolf_inter(double t, int offset);
 void			wolf_draw(t_map *parameter);
 int				wolf_get_sector(t_map *parameter, int x, int y);
+unsigned		wolf_get_tex(t_map *parameter, int x, int y, t_line line);
 void			wolf_rotate(t_player *player, double sign, double spd);
 void			wolf_step(t_map *map, t_player *player, double spd);
 void			wolf_background(t_map *map, int ceiling, int floor);

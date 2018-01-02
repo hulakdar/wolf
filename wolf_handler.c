@@ -6,7 +6,7 @@
 /*   By: skamoza <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/06 16:58:02 by skamoza           #+#    #+#             */
-/*   Updated: 2017/12/26 18:28:47 by skamoza          ###   ########.fr       */
+/*   Updated: 2017/12/30 02:59:33 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	wolf_destruct(t_map *map)
 
 	cunt = -1;
 	while (++cunt < TEXTURES)
-		mlx_destroy_image(map->mlx, map->textures[cunt].ptr);
+		mlx_destroy_image(map->mlx, map->tex[cunt].ptr);
 	cunt = -1;
 	while (++cunt < SPRITES)
 		mlx_destroy_image(map->mlx, map->sprites[cunt].ptr);
@@ -44,9 +44,9 @@ int		wolf_key(int keycode, t_map *map)
 {
 	if (keycode == 53)
 		wolf_exit_x(map);
-	else if (keycode == 257)
+	if (keycode == 257)
 		map->strafe = 1;
-	else if (map->strafe && (keycode == 123 || keycode  == 124))
+	if (map->strafe && (keycode == 123 || keycode  == 124))
 		wolf_strafe(map, &map->player, keycode == 123 ? 0.2 : -0.2);
 	else if (keycode == 126 || keycode  == 125)
 		wolf_step(map, &map->player, keycode == 126 ? 0.2 : -0.2);

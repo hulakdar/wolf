@@ -6,16 +6,11 @@
 /*   By: skamoza <skamoza@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/18 16:01:23 by skamoza           #+#    #+#             */
-/*   Updated: 2017/12/26 19:01:33 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/02 17:33:28 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wolf.h"
-
-int		wolf_get_sector(t_map *map, int m_y, int m_x)
-{
-	return (map->map.data[m_y * map->map.size_line / 4 + m_x] & 0xFFFFFF);
-}
 
 void	wolf_strafe(t_map *map, t_player *player, double speed)
 {
@@ -46,11 +41,11 @@ void	wolf_step(t_map *map, t_player *player, double speed)
 	new_pos.y = player->pos.y + player->dir.y * speed;
 	if (new_pos.x >= 0 && new_pos.x < map->map.w && player->pos.y >= 0 &&
 	player->pos.y < map->map.h)
-	//&& !wolf_get_sector(map, (int)player->pos.x, (int)new_pos.y))
+		//&& !wolf_is_wall(map, (int)player->pos.x, (int)new_pos.y))
 		player->pos.x = new_pos.x;
 	if (player->pos.x >= 0 && player->pos.x < map->map.w && new_pos.y >= 0 &&
 	new_pos.y < map->map.h)
-	//&& !wolf_get_sector(map, (int)new_pos.x, (int)player->pos.y))
+		//&& !wolf_is_wall(map, (int)new_pos.x, (int)player->pos.y))
 		player->pos.y = new_pos.y;
 }
 

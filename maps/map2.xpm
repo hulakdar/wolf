@@ -1,7 +1,6 @@
 /* XPM */
 static char *map[] = {
-	/* plaid pixmap 
-	 * width height ncolors chars_per_pixel */
+	/* width height ncolors chars_per_pixel */
 	"24 24 9 1",
 	/* colors */
 	"0  c none",

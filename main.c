@@ -6,7 +6,7 @@
 /*   By: skamoza <skamoza@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/17 13:30:33 by skamoza           #+#    #+#             */
-/*   Updated: 2017/12/26 18:26:20 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/02 17:46:13 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,9 +80,10 @@ void	wolf_open(void *mlx, t_image *image, char *map_name)
 
 void	wolf_init(t_map *map, char *map_name)
 {
-	static	char	*textures[] = {"tex/fb.xpm", "tex/bricks.xpm", "tex/eagle.xpm",
-		"tex/sand_bricks.xpm",	"tex/white_bricks.xpm", "tex/wood.xpm",
-		"tex/mossy.xpm", "tex/bluestone.xpm", "tex/greystone.xpm"};
+	static	char	*textures[] = {"tex/bg.xpm", "tex/fb.xpm", "tex/bricks.xpm",
+		"tex/eagle.xpm", "tex/sand_bricks.xpm", "tex/white_bricks.xpm",
+		"tex/wood.xpm", "tex/mossy.xpm", "tex/bluestone.xpm",
+		"tex/greystone.xpm"};
 	static	char	*sprites[] = {"sprites/books.xpm", "sprites/PDF.xpm",
 		"sprites/hand_left.xpm", "sprites/half_clock.xpm"};
 	int				cunt;
@@ -94,12 +95,12 @@ void	wolf_init(t_map *map, char *map_name)
 		wolf_error("Something went completely wrong", NULL);
 	cunt = -1;
 	while (++cunt < TEXTURES)
-		wolf_open(map->mlx, &map->textures[cunt], textures[cunt]);
+		wolf_open(map->mlx, &map->tex[cunt], textures[cunt]);
 	cunt = -1;
 	while (++cunt < SPRITES)
 		wolf_open(map->mlx, &map->sprites[cunt], sprites[cunt]);
-	map->player.pos.x = 11.5;
-	map->player.pos.y = 22.0;
+	map->player.pos.x = 0.5;
+	map->player.pos.y = 0.5;
 	map->player.dir.x = -1.0;
 	map->player.dir.y = 0.0;
 	map->player.plane.x = 0.0;
@@ -115,6 +116,17 @@ int		main(int argc, char **argv)
 	if (argc != 2)
 		wolf_usage();
 	wolf_init(&map, argv[1]);
+	for (int i = 0; i < 24 * 3; i++)
+	{
+		t_sector sect;
+		sect.tex = map.map.data[i];
+		if (sect.sect.n >= TEXTURES || sect.sect.e >= TEXTURES ||
+				sect.sect.e >= TEXTURES || sect.sect.e >= TEXTURES)
+		{
+			wolf_error("Invalid map, no such texture", NULL);
+		}
+	}
+	printf("\n");
 	map.image.ptr = mlx_new_image(map.mlx, WIDTH, HEIGHT);
 	map.image.data = (int *)mlx_get_data_addr(map.image.ptr,
 		&map.image.bits_per_pixel, &map.image.size_line, &map.image.endian);
