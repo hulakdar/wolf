@@ -6,7 +6,7 @@
 /*   By: skamoza <skamoza@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/17 13:30:33 by skamoza           #+#    #+#             */
-/*   Updated: 2018/01/06 19:39:39 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/06 19:41:22 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,8 +84,8 @@ int		main(int argc, char **argv)
 	map.image.ptr = mlx_new_image(map.mlx, WIDTH, HEIGHT);
 	map.image.data = (int *)mlx_get_data_addr(map.image.ptr,
 		&map.image.bits_per_pixel, &map.image.size_line, &map.image.endian);
-	wolf_open(map.mlx, &map.hud, "hud.xpm");
-	wolf_open(map.mlx, &map.gun, "gun.xpm");
-	wolf_open(map.mlx, &map.gun_fire, "gun_fire.xpm");
+	wolf_open(map.mlx, &map.hud, "tex/hud.xpm");
+	wolf_open(map.mlx, &map.gun, "tex/gun.xpm");
+	wolf_open(map.mlx, &map.gun_fire, "tex/gun_fire.xpm");
 	mlx_loop(map.mlx);
 }
