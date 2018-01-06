@@ -6,7 +6,7 @@
 /*   By: skamoza <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/06 16:58:02 by skamoza           #+#    #+#             */
-/*   Updated: 2018/01/06 16:48:29 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/06 19:25:16 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,10 @@ void	wolf_destruct(t_map *map)
 	while (++cunt < TEXTURES)
 		mlx_destroy_image(map->mlx, map->tex[cunt].ptr);
 	cunt = -1;
-	while (++cunt < SPRITES)
-		mlx_destroy_image(map->mlx, map->sprites[cunt].ptr);
 	mlx_destroy_image(map->mlx, map->map.ptr);
+	mlx_destroy_image(map->mlx, map->gun.ptr);
+	mlx_destroy_image(map->mlx, map->gun_fire.ptr);
+	mlx_destroy_image(map->mlx, map->hud.ptr);
 	mlx_destroy_window(map->mlx, map->window);
 	mlx_do_key_autorepeaton(map->mlx);
 }
@@ -43,7 +44,7 @@ void	wolf_usage(void)
 
 int		wolf_key(int keycode, t_map *map)
 {
-	if (keycode == 53)
+	if (keycode == BUTT_ESC)
 		wolf_exit_x(map);
 	else if (keycode == BUTT_SHIFT_L || keycode == BUTT_SHIFT_R)
 		map->buttons.strafe = 1;
@@ -55,6 +56,8 @@ int		wolf_key(int keycode, t_map *map)
 		map->buttons.w = 1;
 	else if (keycode == BUTT_S || keycode == ARROW_DOWN)
 		map->buttons.s = 1;
+	else if (keycode == BUTT_SPACE && !map->buttons.gun_fire)
+		map->buttons.gun_fire = 15;
 	return (0);
 }
 

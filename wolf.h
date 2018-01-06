@@ -6,15 +6,14 @@
 /*   By: skamoza <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/06 16:15:28 by skamoza           #+#    #+#             */
-/*   Updated: 2018/01/06 16:51:55 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/06 19:24:30 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WOLF_H
 # define WOLF_H
-# define THREADS 8
+# define THREADS 16
 # define TEXTURES 11
-# define SPRITES 4
 # define HEIGHT 1300
 # define WIDTH 1300
 # include <mlx.h>
@@ -110,14 +109,17 @@ typedef	struct	s_buttons
 	unsigned	s : 1;
 	unsigned	d : 1;
 	unsigned	strafe : 1;
+	unsigned	gun_fire : 4;
 }				t_buttons;
 typedef struct	s_map
 {
 	t_image		map;
+	t_image		hud;
+	t_image		gun;
+	t_image		gun_fire;
 	t_image		minimap;
 	t_image		image;
 	t_image		tex[TEXTURES];
-	t_image		sprites[SPRITES];
 	t_player	player;
 	t_buttons	buttons;
 	void		*mlx;

@@ -6,7 +6,7 @@
 /*   By: skamoza <skamoza@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/18 16:01:23 by skamoza           #+#    #+#             */
-/*   Updated: 2018/01/06 16:34:25 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/06 19:12:51 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void			wolf_background(t_map *map, int ceiling, int floor)
 inline int		wolf_get_sector(t_map *map, int m_y, int m_x)
 {
 	if (m_x < 0 || m_y < 0 || m_x >= map->map.w || m_y >= map->map.h)
-		return (0);
+		return (0xFFFFFFFF);
 	return (map->map.data[m_y * map->map.size_line / 4 + m_x]);
 }
 
@@ -43,6 +43,8 @@ inline unsigned	wolf_get_tex(t_map *map, int m_y, int m_x, t_line line)
 	t_sector sect;
 
 	sect.tex = wolf_get_sector(map, m_y, m_x);
+	if (sect.tex == 0xFFFFFFFF)
+		return (0);
 	if (sect.sect.is_wall)
 	{
 		if (line.side == 0 && line.ray_dir.x > 0.0)

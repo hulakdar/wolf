@@ -6,7 +6,7 @@
 /*   By: skamoza <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/28 13:27:11 by skamoza           #+#    #+#             */
-/*   Updated: 2018/01/06 16:33:06 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/06 19:25:32 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,18 @@ void					wolf_draw_floor_ceil(t_map *map, t_line line, int y)
 	}
 }
 
+void					wolf_put_all_images(t_map *map)
+{
+	mlx_put_image_to_window(map->mlx, map->window, map->image.ptr, 0, 0);
+	if (map->buttons.gun_fire > 5)
+		mlx_put_image_to_window(map->mlx, map->window, map->gun_fire.ptr,
+		WIDTH / 2 - map->gun_fire.w / 2, HEIGHT - map->hud.h - map->gun_fire.h);
+	mlx_put_image_to_window(map->mlx, map->window, map->gun.ptr, WIDTH / 2
+			- map->gun.w / 2, HEIGHT - map->hud.h - map->gun.h);
+	mlx_put_image_to_window(map->mlx, map->window, map->hud.ptr, WIDTH / 2
+			- map->hud.w / 2, HEIGHT - map->hud.h);
+}
+
 int						wolf_draw(t_map *map)
 {
 	int			x;
@@ -111,6 +123,6 @@ int						wolf_draw(t_map *map)
 	}
 	while (i-- > 0)
 		pthread_join(thread[i], NULL);
-	mlx_put_image_to_window(map->mlx, map->window, map->image.ptr, 0, 0);
+	wolf_put_all_images(map);
 	return (1);
 }

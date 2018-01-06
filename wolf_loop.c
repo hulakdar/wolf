@@ -6,7 +6,7 @@
 /*   By: skamoza <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/01/04 16:44:58 by skamoza           #+#    #+#             */
-/*   Updated: 2018/01/06 16:38:27 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/06 19:25:50 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,8 @@ int					wolf_loop(t_map *map)
 		wolf_strafe(map, &map->player, map->buttons.a ? -0.05 : 0.05);
 	else if (map->buttons.a || map->buttons.d)
 		wolf_rotate(&map->player, map->buttons.a ? -1.0 : 1.0, 0.07);
+	if (map->buttons.gun_fire)
+		map->buttons.gun_fire--;
 	wolf_draw(map);
 	return (0);
 }

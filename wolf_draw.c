@@ -6,7 +6,7 @@
 /*   By: skamoza <skamoza@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/17 13:47:05 by skamoza           #+#    #+#             */
-/*   Updated: 2018/01/06 16:42:39 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/06 19:12:50 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static inline void	wolf_dda(t_map *map, t_dda *dda, int m_x, int m_y)
 			dda->side_dist.y += dda->d.y;
 			m_y += dda->step.y;
 		}
-		if ((line.sector.tex = wolf_get_sector(map, m_y, m_x)) == 0 ||
+		if ((line.sector.tex = wolf_get_sector(map, m_y, m_x)) == 0xFFFFFFFF ||
 			line.sector.sect.is_wall)
 			break ;
 	}

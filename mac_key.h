@@ -6,15 +6,14 @@
 /*   By: skamoza <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/01/06 16:38:37 by skamoza           #+#    #+#             */
-/*   Updated: 2018/01/06 16:49:08 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/06 19:04:17 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MAC_KEY_H
 # define MAC_KEY_H
 
-# define ESC_BUT 53
-# define QUEST_BUT 44
+# define BUTT_ESC 53
 # define ARROW_UP 126
 # define ARROW_DOWN 125
 # define ARROW_LEFT 123

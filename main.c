@@ -6,7 +6,7 @@
 /*   By: skamoza <skamoza@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/17 13:30:33 by skamoza           #+#    #+#             */
-/*   Updated: 2018/01/06 16:51:03 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/06 19:24:17 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	wolf_hooks(t_map *map)
 	map->buttons.d = 0;
 	map->buttons.a = 0;
 	map->buttons.strafe = 0;
+	map->buttons.gun_fire = 0;
 }
 
 void	wolf_open(void *mlx, t_image *image, char *map_name)
@@ -42,8 +43,6 @@ void	wolf_init(t_map *map, char *map_name)
 		"tex/bricks.xpm", "tex/eagle.xpm", "tex/sand_bricks.xpm",
 		"tex/white_bricks.xpm", "tex/wood.xpm", "tex/mossy.xpm",
 		"tex/bluestone.xpm", "tex/greystone.xpm", "tex/metal.xpm"};
-	static	char	*sprites[] = {"sprites/books.xpm", "sprites/PDF.xpm",
-		"sprites/hand_left.xpm", "sprites/half_clock.xpm"};
 	int				cunt;
 
 	if (!(map->mlx = mlx_init()))
@@ -54,9 +53,6 @@ void	wolf_init(t_map *map, char *map_name)
 	cunt = -1;
 	while (++cunt < TEXTURES)
 		wolf_open(map->mlx, &map->tex[cunt], textures[cunt]);
-	cunt = -1;
-	while (++cunt < SPRITES)
-		wolf_open(map->mlx, &map->sprites[cunt], sprites[cunt]);
 	map->player.dir.x = 1.0;
 	map->player.dir.y = 0.0;
 	map->player.plane.x = 0.0;
@@ -88,5 +84,8 @@ int		main(int argc, char **argv)
 	map.image.ptr = mlx_new_image(map.mlx, WIDTH, HEIGHT);
 	map.image.data = (int *)mlx_get_data_addr(map.image.ptr,
 		&map.image.bits_per_pixel, &map.image.size_line, &map.image.endian);
+	wolf_open(map.mlx, &map.hud, "hud.xpm");
+	wolf_open(map.mlx, &map.gun, "gun.xpm");
+	wolf_open(map.mlx, &map.gun_fire, "gun_fire.xpm");
 	mlx_loop(map.mlx);
 }
