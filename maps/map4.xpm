@@ -4,8 +4,8 @@ static char *map[] = {
 	 * width height ncolors chars_per_pixel */
 	"1 1 2 1",
 	/* colors */
-	"0  c #00000067",
-	"1  c #ff123400",
+	"0  c #000078",
+	"1  c #013333",
 	/* pixels */
 	"1",
 };

@@ -6,40 +6,11 @@
 /*   By: skamoza <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/28 13:27:11 by skamoza           #+#    #+#             */
-/*   Updated: 2018/01/02 17:33:08 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/06 16:33:06 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wolf.h"
-
-inline int		wolf_get_sector(t_map *map, int m_y, int m_x)
-{
-	if (m_x < 0 || m_y < 0 || m_x >= map->map.w || m_y >= map->map.h)
-		return (0);
-	return (map->map.data[m_y * map->map.size_line / 4 + m_x]);
-}
-
-inline unsigned wolf_get_tex(t_map *map, int m_y, int m_x, t_line line)
-{
-	t_sector sect;
-
-	if (m_x < 0 || m_y < 0 || m_x >= map->map.w || m_y >= map->map.h)
-		return (0);
-	sect.tex = wolf_get_sector(map, m_y, m_x);
-	if (sect.sect.is_wall)
-	{
-		if (line.side == 0 && line.ray_dir.x > 0.0)
-			return (sect.sect.n);
-		else if (line.side == 0 && line.ray_dir.x < 0.0)
-			return (sect.sect.e);
-		else if (line.side == 1 && line.ray_dir.y > 0.0)
-			return (sect.sect.w);
-		return (sect.sect.s);
-	}
-	else if (line.is_floor)
-		return (sect.sect.w);
-	return (sect.sect.s);
-}
 
 static inline t_point	wolf_find_floor(t_line line)
 {
@@ -68,52 +39,78 @@ static inline t_point	wolf_find_floor(t_line line)
 	return (floor);
 }
 
-static inline t_coord	wolf_get_fc(t_map *map, int m_x, int m_y, t_line line)
+static inline t_line	wolf_get_fc(t_map *map, t_line line)
 {
-	t_coord fc;
-	
+	line.distance.y = line.distance.x / line.dist;
+	line.cur.x = line.distance.y * line.floor.x + (1.0 - line.distance.y)
+		* map->player.pos.x;
+	line.cur.y = line.distance.y * line.floor.y + (1.0 - line.distance.y)
+		* map->player.pos.y;
 	line.is_floor = 1;
-	fc.x = wolf_get_tex(map, m_y, m_x, line);
+	line.tex_c.x = wolf_get_tex(map, (int)line.cur.y, (int)line.cur.x, line);
 	line.is_floor = 0;
-	fc.y = wolf_get_tex(map, m_y, m_x, line);
-	return (fc);
+	line.tex_c.y = wolf_get_tex(map, (int)line.cur.y, (int)line.cur.x, line);
+	line.tex_c.x = line.tex_c.x < 0 ? 0 : line.tex_c.x;
+	line.tex_c.y = line.tex_c.y < 0 ? 0 : line.tex_c.y;
+	line.texe.x = (int)(line.cur.x * map->tex[line.tex_c.x].w) %
+		map->tex[line.tex_c.x].w;
+	line.texe.y = (int)(line.cur.y * map->tex[line.tex_c.x].h) %
+		map->tex[line.tex_c.x].h;
+	line.tex_ceil.x = (int)(line.cur.x * map->tex[line.tex_c.y].w) %
+		map->tex[line.tex_c.y].w;
+	line.tex_ceil.y = (int)(line.cur.y * map->tex[line.tex_c.y].h) %
+		map->tex[line.tex_c.y].h;
+	return (line);
 }
 
 void					wolf_draw_floor_ceil(t_map *map, t_line line, int y)
 {
-	t_point	floor;
-	t_point	cur;
-	t_point	dist;
-	t_coord	tex;
-	t_coord	tex_ceil;
-	t_coord	tex_c;
 	int		old;
 
 	y = y < 0 ? HEIGHT : y;
-	floor = wolf_find_floor(line);
+	line.floor = wolf_find_floor(line);
 	while (y < HEIGHT)
 	{
-		dist.x = (double)HEIGHT / (double)((y << 1) - HEIGHT);
-		dist.y = dist.x / line.dist;
-		cur.x = dist.y * floor.x + (1.0 - dist.y) * map->player.pos.x;
-		cur.y = dist.y * floor.y + (1.0 - dist.y) * map->player.pos.y;
-		tex_c = wolf_get_fc(map, (int)cur.x, (int)cur.y, line);
-		tex_c.x = tex_c.x < 0 ? 0 : tex_c.x;
-		tex_c.y = tex_c.y < 0 ? 0 : tex_c.y;
-		tex.x = (int)(cur.x * map->tex[tex_c.x].w) % map->tex[tex_c.x].w;
-		tex.y = (int)(cur.y * map->tex[tex_c.x].h) % map->tex[tex_c.x].h;
-		tex_ceil.x = (int)(cur.x * map->tex[tex_c.y].w) % map->tex[tex_c.y].w;
-		tex_ceil.y = (int)(cur.y * map->tex[tex_c.y].h) % map->tex[tex_c.y].h;
+		line.distance.x = (double)HEIGHT / (double)((y << 1) - HEIGHT);
+		line = wolf_get_fc(map, line);
 		old = map->image.data[y * map->image.size_line / 4 + line.x];
 		map->image.data[y * map->image.size_line / 4 + line.x] =
-		map->tex[tex_c.x].data[tex.y * map->tex[tex_c.x].size_line / 4 + tex.x];
-		if (map->image.data[y * map->image.size_line / 4 + line.x] & 0xFF000000)
+			wolf_get_texel(map, line.texe, line.tex_c.x);
+		if ((map->image.data[y * map->image.size_line / 4 + line.x]
+			& 0xFF000000) || !line.tex_c.y)
 			map->image.data[y * map->image.size_line / 4 + line.x] = old;
 		old = map->image.data[(HEIGHT - y) * map->image.size_line / 4 + line.x];
-		map->image.data[(HEIGHT - y) * map->image.size_line / 4 + line.x] = 
-		map->tex[tex_c.y].data[tex_ceil.y * map->tex[tex_c.y].size_line / 4 + tex_ceil.x];
-		if (map->image.data[(HEIGHT - y) * map->image.size_line / 4 + line.x] & 0xFF000000)
-			map->image.data[(HEIGHT - y) * map->image.size_line / 4 + line.x] = old;
+		map->image.data[(HEIGHT - y) * map->image.size_line / 4 + line.x] =
+			wolf_get_texel(map, line.tex_ceil, line.tex_c.y);
+		if ((map->image.data[(HEIGHT - y) * map->image.size_line / 4 + line.x]
+			& 0xFF000000) || !line.tex_c.x)
+			map->image.data[(HEIGHT - y) *
+				map->image.size_line / 4 + line.x] = old;
 		y++;
 	}
+}
+
+int						wolf_draw(t_map *map)
+{
+	int			x;
+	int			i;
+	pthread_t	thread[THREADS];
+	t_thread	info[THREADS];
+
+	wolf_background(map, 0x505050, 0x808080);
+	x = 0;
+	i = 0;
+	while (i < THREADS)
+	{
+		info[i].map = map;
+		info[i].x = x;
+		x += (WIDTH / THREADS);
+		info[i].ceil = x;
+		pthread_create(&(thread[i]), NULL, (void *(*)())wolf_thr, &(info[i]));
+		i++;
+	}
+	while (i-- > 0)
+		pthread_join(thread[i], NULL);
+	mlx_put_image_to_window(map->mlx, map->window, map->image.ptr, 0, 0);
+	return (1);
 }

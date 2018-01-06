@@ -1,6 +1,6 @@
 CC=clang
-CFLAGS=-Wall -Wextra -g
-ZADANIE=main wolf_handler wolf_draw wolf_helpers wolf_helpers_2 wolf_helpers_3
+CFLAGS=-Wall -Wextra -g -O3
+ZADANIE=main wolf_handler wolf_draw wolf_helpers wolf_helpers_2 wolf_helpers_3 wolf_loop
 OBJ=$(addprefix obj/, $(addsuffix .o, $(ZADANIE)))
 NAME=wolf3d
 

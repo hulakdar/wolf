@@ -6,16 +6,14 @@
 /*   By: skamoza <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/06 16:15:28 by skamoza           #+#    #+#             */
-/*   Updated: 2018/01/02 17:04:11 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/06 16:51:55 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-
 #ifndef WOLF_H
 # define WOLF_H
-# define THREADS 4
-# define TEXTURES 9
+# define THREADS 8
+# define TEXTURES 11
 # define SPRITES 4
 # define HEIGHT 1300
 # define WIDTH 1300
@@ -23,6 +21,11 @@
 # include <pthread.h>
 # include <math.h>
 # include "libft/includes/libft.h"
+# ifdef __APPLE__
+#  include "mac_key.h"
+# else
+#  include "linux_key.h"
+# endif
 
 typedef unsigned char	t_byte;
 typedef union	u_color
@@ -41,12 +44,12 @@ typedef struct	s_coord
 	int			y;
 }				t_coord;
 typedef struct	s_sect{
-	unsigned buffer : 15;
-	unsigned is_wall : 1;
-	unsigned n : 4;
-	unsigned e : 4;
-	unsigned w : 4;
 	unsigned s : 4;
+	unsigned w : 4;
+	unsigned e : 4;
+	unsigned n : 4;
+	unsigned is_wall : 8;
+	unsigned buffer : 8;
 }				t_sect;
 typedef union	u_sector
 {
@@ -67,6 +70,12 @@ typedef struct	s_line
 	double		wall_x;
 	double		tex_x;
 	t_point		ray_dir;
+	t_point		floor;
+	t_point		cur;
+	t_point		distance;
+	t_coord		texe;
+	t_coord		tex_ceil;
+	t_coord		tex_c;
 }				t_line;
 typedef struct	s_dda
 {
@@ -94,31 +103,48 @@ typedef struct	s_image
 	int			size_line;
 	int			endian;
 }				t_image;
+typedef	struct	s_buttons
+{
+	unsigned	w : 1;
+	unsigned	a : 1;
+	unsigned	s : 1;
+	unsigned	d : 1;
+	unsigned	strafe : 1;
+}				t_buttons;
 typedef struct	s_map
 {
 	t_image		map;
+	t_image		minimap;
 	t_image		image;
 	t_image		tex[TEXTURES];
 	t_image		sprites[SPRITES];
 	t_player	player;
-	char		strafe : 1;
+	t_buttons	buttons;
 	void		*mlx;
 	void		*window;
 }				t_map;
+typedef	struct	s_thread
+{
+	t_map		*map;
+	int			x;
+	int			ceil;
+}				t_thread;
 void			wolf_error(char *error, t_map *parameter);
 void			wolf_draw_floor_ceil(t_map *map, t_line line, int y);
 void			wolf_usage(void);
-void			wolf_zoom(int keycode, int x, int y, t_map *map);
-void			wolf_strafe(t_map *map, t_player *player, double speed);
+int				wolf_mouse(int keycode, int x, int y, t_map *map);
 int				wolf_is_wall(t_map *map, int m_y, int m_x);
 int				wolf_inter(double t, int offset);
-void			wolf_draw(t_map *parameter);
+int				wolf_draw(t_map *parameter);
+void			*wolf_thr(t_thread *parameter);
+int				wolf_loop(t_map *parameter);
+int				wolf_player(t_map *parameter);
 int				wolf_get_sector(t_map *parameter, int x, int y);
+int				wolf_get_texel(t_map *map, t_coord x, int y);
 unsigned		wolf_get_tex(t_map *parameter, int x, int y, t_line line);
-void			wolf_rotate(t_player *player, double sign, double spd);
-void			wolf_step(t_map *map, t_player *player, double spd);
 void			wolf_background(t_map *map, int ceiling, int floor);
 int				wolf_key(int keycode, t_map *parameter);
+int				wolf_unpress(int keycode, t_map *parameter);
 int				wolf_exit_x(t_map *parameter);
 void			wolf_destruct(t_map *map);
 #endif

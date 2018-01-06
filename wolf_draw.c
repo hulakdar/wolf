@@ -6,7 +6,7 @@
 /*   By: skamoza <skamoza@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/17 13:47:05 by skamoza           #+#    #+#             */
-/*   Updated: 2018/01/02 17:07:42 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/06 16:42:39 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,6 @@ static inline void	wolf_draw_line(t_map *map, t_dda *dda, t_line line)
 	int		draw_start;
 	int		draw_end;
 
-	line.dist = line.side ? (line.map_y - map->player.pos.y + (1.0 -
-	dda->step.y) / 2.0) / dda->dir.y : (line.map_x - map->player.pos.x
-	+ (1.0 - dda->step.x) / 2.0) / dda->dir.x;
-	line.h = ((double)HEIGHT / line.dist);
 	draw_start = (-line.h + HEIGHT) / 2;
 	draw_start = draw_start < 0 ? 0 : draw_start;
 	draw_end = (line.h + HEIGHT) / 2;
@@ -49,12 +45,12 @@ static inline void	wolf_draw_line(t_map *map, t_dda *dda, t_line line)
 							map->player.pos.y + line.dist * dda->dir.y;
 	line.wall_x -= floor(line.wall_x);
 	line.x = dda->x;
-	line.is_floor = 0;
-	line.tex = wolf_get_tex(map, line.map_x, line.map_y, line);
-	line.tex_x = (int)(line.wall_x * (double)map->tex[line.tex].w);
 	line.ray_dir = dda->dir;
+	line.is_floor = 0;
+	line.tex = wolf_get_tex(map, line.map_y, line.map_x, line);
+	line.tex_x = (int)(line.wall_x * (double)map->tex[line.tex].w);
 	wolf_draw_wall(map, line, draw_start, draw_end);
-	wolf_draw_floor_ceil(map, line, draw_end);
+	wolf_draw_floor_ceil(map, line, draw_end + 1);
 }
 
 static inline void	wolf_dda(t_map *map, t_dda *dda, int m_x, int m_y)
@@ -63,7 +59,6 @@ static inline void	wolf_dda(t_map *map, t_dda *dda, int m_x, int m_y)
 
 	while (1)
 	{
-		line.sector.tex = 0;
 		if (dda->side_dist.x < dda->side_dist.y && !(line.side = 0))
 		{
 			dda->side_dist.x += dda->d.x;
@@ -75,11 +70,15 @@ static inline void	wolf_dda(t_map *map, t_dda *dda, int m_x, int m_y)
 			m_y += dda->step.y;
 		}
 		if ((line.sector.tex = wolf_get_sector(map, m_y, m_x)) == 0 ||
-												line.sector.sect.is_wall)
+			line.sector.sect.is_wall)
 			break ;
 	}
 	line.map_x = m_x;
 	line.map_y = m_y;
+	line.dist = line.side ? (line.map_y - map->player.pos.y + (1.0 -
+	dda->step.y) / 2.0) / dda->dir.y : (line.map_x - map->player.pos.x
+	+ (1.0 - dda->step.x) / 2.0) / dda->dir.x;
+	line.h = ((double)HEIGHT / line.dist);
 	wolf_draw_line(map, dda, line);
 }
 
@@ -99,23 +98,20 @@ static inline void	wolf_dda_prepare(t_map *map, t_dda *dda, double camera_x)
 	dda->side_dist.y *= dda->d.y;
 }
 
-void				wolf_draw(t_map *map)
+void				*wolf_thr(t_thread *thread)
 {
-	int			x;
 	t_dda		dda;
 	double		camera_x;
-	
-	wolf_background(map, 0x505050, 0x808080);
-	x = 0;
-	dda.pos_x = (int)map->player.pos.x;
-	dda.pos_y = (int)map->player.pos.y;
-	while (x < WIDTH)
+
+	dda.pos_x = (int)thread->map->player.pos.x;
+	dda.pos_y = (int)thread->map->player.pos.y;
+	dda.x = thread->x;
+	while (dda.x < thread->ceil)
 	{
-		dda.x = x;
-		camera_x = 2 * x / (double)WIDTH - 1.0;
-		wolf_dda_prepare(map, &dda, camera_x);
-		wolf_dda(map, &dda, dda.pos_x, dda.pos_y);
-		x++;
+		camera_x = 2 * dda.x / (double)WIDTH - 1.0;
+		wolf_dda_prepare(thread->map, &dda, camera_x);
+		wolf_dda(thread->map, &dda, dda.pos_x, dda.pos_y);
+		dda.x++;
 	}
-	mlx_put_image_to_window(map->mlx, map->window, map->image.ptr, 0 , 0);
+	return (NULL);
 }

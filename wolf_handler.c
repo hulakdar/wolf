@@ -6,7 +6,7 @@
 /*   By: skamoza <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/06 16:58:02 by skamoza           #+#    #+#             */
-/*   Updated: 2017/12/30 02:59:33 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/06 16:48:29 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ void	wolf_destruct(t_map *map)
 		mlx_destroy_image(map->mlx, map->sprites[cunt].ptr);
 	mlx_destroy_image(map->mlx, map->map.ptr);
 	mlx_destroy_window(map->mlx, map->window);
+	mlx_do_key_autorepeaton(map->mlx);
 }
 
 void	wolf_error(char *error, t_map *parameter)
@@ -44,17 +45,16 @@ int		wolf_key(int keycode, t_map *map)
 {
 	if (keycode == 53)
 		wolf_exit_x(map);
-	if (keycode == 257)
-		map->strafe = 1;
-	if (map->strafe && (keycode == 123 || keycode  == 124))
-		wolf_strafe(map, &map->player, keycode == 123 ? 0.2 : -0.2);
-	else if (keycode == 126 || keycode  == 125)
-		wolf_step(map, &map->player, keycode == 126 ? 0.2 : -0.2);
-	else if (keycode == 123 || keycode == 124)
-		wolf_rotate(&map->player, keycode == 123 ? 1.0 : -1.0, 0.2);
-	else
-		printf("Keycode: %d\n", keycode);
-	wolf_draw(map);
+	else if (keycode == BUTT_SHIFT_L || keycode == BUTT_SHIFT_R)
+		map->buttons.strafe = 1;
+	else if (keycode == BUTT_A || keycode == ARROW_LEFT)
+		map->buttons.a = 1;
+	else if (keycode == BUTT_D || keycode == ARROW_RIGHT)
+		map->buttons.d = 1;
+	else if (keycode == BUTT_W || keycode == ARROW_UP)
+		map->buttons.w = 1;
+	else if (keycode == BUTT_S || keycode == ARROW_DOWN)
+		map->buttons.s = 1;
 	return (0);
 }
 
