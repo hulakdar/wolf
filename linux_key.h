@@ -6,12 +6,13 @@
 /*   By: skamoza <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/01/06 16:40:57 by skamoza           #+#    #+#             */
-/*   Updated: 2018/01/06 19:02:45 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/07 11:45:16 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LINUX_KEY_H
 # define LINUX_KEY_H
+
 # define BUTT_ESC 65307
 # define ARROW_UP 65362
 # define ARROW_DOWN 65364
