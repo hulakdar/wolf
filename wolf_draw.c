@@ -6,7 +6,7 @@
 /*   By: skamoza <skamoza@gmail.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/17 13:47:05 by skamoza           #+#    #+#             */
-/*   Updated: 2018/01/06 19:12:50 by skamoza          ###   ########.fr       */
+/*   Updated: 2018/01/14 18:38:57 by skamoza          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ static inline void	wolf_draw_wall(t_map *map, t_line line, int y, int draw_end)
 
 	while (y < draw_end)
 	{
-		d = y * 256 - HEIGHT * 128 + line.h * 128;
-		tex_y = abs(((d * map->tex[line.tex].h) / line.h) / 256);
+		d = (y << 1) - HEIGHT + line.h;
+		tex_y = abs(((d * map->tex[line.tex].h) / line.h) >> 1);
 		old = map->image.data[y * map->image.size_line / 4 + line.x];
 		map->image.data[y * map->image.size_line / 4 + line.x] =
 		map->tex[line.tex].data[

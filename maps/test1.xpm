@@ -2,7 +2,7 @@
 static char *map[] = {
 	/* plaid pixmap 
 	 * width height ncolors chars_per_pixel */
-	"7 9 8 1",
+	"-7 9 8 1",
 	/* colors */
 	"0  c #000022",
 	"1  c #01aaaa",
