@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS=-Wall -Wextra -O3
+CFLAGS=-Wall -Wextra -O3 -flto=thin
 ZADANIE=main wolf_handler wolf_draw wolf_helpers wolf_helpers_2 wolf_helpers_3 wolf_loop
 OBJ=$(addprefix obj/, $(addsuffix .o, $(ZADANIE)))
 LIBFT=libft/libft.a
